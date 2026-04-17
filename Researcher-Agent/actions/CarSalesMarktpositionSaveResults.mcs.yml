@@ -1,0 +1,13 @@
+mcs.metadata:
+  componentName: Car Sales Marktposition Save Results
+kind: TaskDialog
+modelDescription: |-
+  "Speichert das Recherche-Ergebnis in Dataverse. Die Inputs sind:
+   text=ParentConversationId aus dem KONTEXT,
+   text_1=KriteriumNr aus dem KONTEXT (1-5 als Zahl),
+   text_2=Der vollständige Recherche-Report."
+action:
+  kind: InvokeFlowTaskAction
+  flowId: 2eaf76f1-4829-f111-88b3-000d3a5d3332
+
+outputMode: All

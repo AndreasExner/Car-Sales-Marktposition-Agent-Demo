@@ -1,0 +1,30 @@
+﻿jsonFileName: workflows/CarSalesMarktpositionSaveResults-2eaf76f1-4829-f111-88b3-000d3a5d3332/workflow.json
+workflowId: 2eaf76f1-4829-f111-88b3-000d3a5d3332
+name: Car Sales Marktposition Save Results
+type: 1
+description: This flow is triggered manually when an agent submits information. It updates a specific record in a database based on the provided conversation ID and criterion number, setting the result and status fields. Once the update is successful, the flow sends a response back to the agent, confirming completion. The logical sequence is determined by the success of the update action, ensuring the response is only sent after the database record has been updated.
+subprocess: false
+category: 5
+mode: 0
+scope: 4
+onDemand: false
+triggerOnCreate: false
+triggerOnDelete: false
+asyncAutodelete: false
+syncWorkflowLogOnFailure: false
+stateCode: 1
+statusCode: 2
+runAs: 1
+isTransacted: true
+introducedVersion: 1.0
+isCustomizable:
+  value: true
+  canBeChanged: true
+  managedPropertyLogicalName: iscustomizableanddeletable
+businessProcessType: 0
+isCustomProcessingStepAllowedForOtherPublishers:
+  value: true
+  canBeChanged: true
+  managedPropertyLogicalName: canbedeleted
+modernFlowType: 1
+primaryEntity: none

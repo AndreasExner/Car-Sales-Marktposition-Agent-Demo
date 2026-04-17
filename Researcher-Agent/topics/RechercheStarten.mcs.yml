@@ -1,0 +1,52 @@
+mcs.metadata:
+  componentName: Recherche Starten
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnRecognizedIntent
+  id: main
+  intent:
+    displayName: Recherche starten
+    triggerQueries:
+      - === AUFTRAG ===
+      - Recherchiere
+      - Kriterium
+      - AUFTRAG
+
+  actions:
+    - kind: SetVariable
+      id: captureInput
+      variable: Topic.UserPrompt
+      value: =System.Activity.Text
+
+    - kind: InvokeFlowAction
+      id: invokeFlowAction_JU81bM
+      input:
+        binding:
+          text: =System.Activity.Text
+
+      output:
+        binding:
+          conversationid: Topic.conversationId
+          kriteriumnr: Topic.kriteriumNr
+
+      flowId: 8011e495-d42c-f111-88b4-000d3a37e7da
+
+    - kind: AnswerQuestionWithAI
+      id: genResearch
+      variable: Topic.Result
+      userInput: =Topic.UserPrompt
+      question: =Topic.UserPrompt
+
+    - kind: InvokeFlowAction
+      id: invokeFlowAction_185Qen
+      input:
+        binding:
+          text: =Topic.conversationId
+          text_1: =Topic.kriteriumNr
+          text_2: =Topic.Result
+
+      output: {}
+      flowId: 2eaf76f1-4829-f111-88b3-000d3a5d3332
+
+    - kind: EndConversation
+      id: tbVGs9
