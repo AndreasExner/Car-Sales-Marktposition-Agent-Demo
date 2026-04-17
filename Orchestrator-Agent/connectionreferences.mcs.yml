@@ -1,0 +1,9 @@
+﻿connectionReferences:
+  - connectionReferenceLogicalName: copilots_header_vwitabe_agent2.shared_commondataserviceforapps.shared-commondataser-c3e50277-558d-493d-9ff8-ef56acd424dc
+    connectorId: /providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps
+  - connectionReferenceLogicalName: copilots_header_vwitabe_agent2.shared_wordonlinebusiness.728293d8900348d7a318226ab163028a
+    connectorId: /providers/Microsoft.PowerApps/apis/shared_wordonlinebusiness
+  - connectionReferenceLogicalName: new_sharedcommondataserviceforapps_a5f8c
+    connectorId: /providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps
+  - connectionReferenceLogicalName: new_sharedmicrosoftcopilotstudio_9f469
+    connectorId: /providers/Microsoft.PowerApps/apis/shared_microsoftcopilotstudio

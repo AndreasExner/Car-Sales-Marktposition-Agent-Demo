@@ -1,0 +1,37 @@
+﻿jsonFileName: workflows/CarSalesMarktpositionFlow-0f715a0a-8218-f111-8341-000d3a37e7da/workflow.json
+workflowId: 0f715a0a-8218-f111-8341-000d3a37e7da
+name: Car Sales Marktposition Flow
+type: 1
+description: >-
+  Diese Flow führt parallel 5 Agenten aus, welche die Kriterien 1-5 recherchieren. 
+
+
+  Als Eingabe werden Instruktionen je Kriterium erwartet
+
+
+  Die Ergebnisse werden je Kriterium zurück gegeben
+subprocess: false
+category: 5
+mode: 0
+scope: 4
+onDemand: false
+triggerOnCreate: false
+triggerOnDelete: false
+asyncAutodelete: false
+syncWorkflowLogOnFailure: false
+stateCode: 1
+statusCode: 2
+runAs: 1
+isTransacted: true
+introducedVersion: 1.0
+isCustomizable:
+  value: true
+  canBeChanged: true
+  managedPropertyLogicalName: iscustomizableanddeletable
+businessProcessType: 0
+isCustomProcessingStepAllowedForOtherPublishers:
+  value: true
+  canBeChanged: true
+  managedPropertyLogicalName: canbedeleted
+modernFlowType: 1
+primaryEntity: none

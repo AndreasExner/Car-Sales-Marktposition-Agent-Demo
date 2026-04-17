@@ -1,0 +1,289 @@
+﻿{
+  "properties": {
+    "connectionReferences": {
+      "shared_commondataserviceforapps": {
+        "api": {
+          "name": "shared_commondataserviceforapps"
+        },
+        "connection": {
+          "connectionReferenceLogicalName": "new_sharedcommondataserviceforapps_a5f8c"
+        },
+        "runtimeSource": "embedded"
+      },
+      "shared_microsoftcopilotstudio": {
+        "api": {
+          "name": "shared_microsoftcopilotstudio"
+        },
+        "connection": {
+          "connectionReferenceLogicalName": "new_sharedmicrosoftcopilotstudio_9f469"
+        },
+        "runtimeSource": "invoker"
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        },
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        }
+      },
+      "triggers": {
+        "manual": {
+          "type": "Request",
+          "kind": "Skills",
+          "inputs": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "description": "Please enter your input",
+                  "title": "fahrzeugmodell",
+                  "type": "string",
+                  "x-ms-content-hint": "TEXT",
+                  "x-ms-dynamically-added": true
+                },
+                "text_1": {
+                  "description": "Please enter your input",
+                  "title": "markt",
+                  "type": "string",
+                  "x-ms-content-hint": "TEXT",
+                  "x-ms-dynamically-added": true
+                },
+                "text_2": {
+                  "description": "Please enter your input",
+                  "title": "variante",
+                  "type": "string",
+                  "x-ms-content-hint": "TEXT",
+                  "x-ms-dynamically-added": true
+                },
+                "text_3": {
+                  "description": "Please enter your input",
+                  "title": "wettbewerber",
+                  "type": "string",
+                  "x-ms-content-hint": "TEXT",
+                  "x-ms-dynamically-added": true
+                },
+                "text_4": {
+                  "description": "Please enter your input",
+                  "title": "conversationId",
+                  "type": "string",
+                  "x-ms-content-hint": "TEXT",
+                  "x-ms-dynamically-added": true
+                }
+              },
+              "required": [
+                "text",
+                "text_1",
+                "text_2",
+                "text_3",
+                "text_4"
+              ]
+            }
+          }
+        }
+      },
+      "actions": {
+        "List_rows_Instructions": {
+          "type": "OpenApiConnection",
+          "inputs": {
+            "parameters": {
+              "entityName": "cr1d7_rechercheinstruktionens",
+              "$orderby": "cr1d7_kriteriumnr asc",
+              "$top": 5
+            },
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+              "operationId": "ListRecords",
+              "connectionName": "shared_commondataserviceforapps"
+            }
+          },
+          "runAfter": {}
+        },
+        "For_each": {
+          "type": "Foreach",
+          "foreach": "@outputs(\u0027List_rows_Instructions\u0027)?[\u0027body/value\u0027]",
+          "actions": {
+            "Add_a_new_row_Results": {
+              "type": "OpenApiConnection",
+              "inputs": {
+                "parameters": {
+                  "entityName": "cr1d7_rechercheergebnisses",
+                  "item/cr1d7_cr_kriteriumname": "@items(\u0027For_each\u0027)?[\u0027cr1d7_name\u0027]",
+                  "item/cr1d7_cr_kriteriumnr": "@items(\u0027For_each\u0027)?[\u0027cr1d7_kriteriumnr\u0027]",
+                  "item/cr1d7_cr_conversationid": "@triggerBody()?[\u0027text_4\u0027]",
+                  "item/cr1d7_cr_readretry": 15,
+                  "item/cr1d7_cr_status": 519970000
+                },
+                "host": {
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+                  "operationId": "CreateRecord",
+                  "connectionName": "shared_commondataserviceforapps"
+                }
+              }
+            },
+            "Compose_rowID": {
+              "type": "Compose",
+              "inputs": "@outputs(\u0027Add_a_new_row_Results\u0027)?[\u0027body/cr1d7_rechercheergebnisseid\u0027]",
+              "runAfter": {
+                "Add_a_new_row_Results": [
+                  "Succeeded"
+                ]
+              }
+            },
+            "Compose_Child_Agent_Prompt": {
+              "type": "Compose",
+              "inputs": "=== Auftrag ===\nRecherchiere Kriterium @{items(\u0027For_each\u0027)?[\u0027cr1d7_kriteriumnr\u0027]}: @{items(\u0027For_each\u0027)?[\u0027cr1d7_name\u0027]}\n=== Kontext ===\n- Fahrzeugmodell: @{triggerBody()?[\u0027text\u0027]}|||\n- Markt: @{triggerBody()?[\u0027text_1\u0027]}|||\n- Variante: @{triggerBody()?[\u0027text_2\u0027]}|||\n- Wettbewerber: @{triggerBody()?[\u0027text_3\u0027]}|||\n- ParentConversationId: @{triggerBody()?[\u0027text_4\u0027]}\n=== Allgemeine Richtlinien ===\n@{items(\u0027For_each\u0027)?[\u0027cr1d7_allgemeinerichtlinien\u0027]}\n=== Recherche-Instruktionen ===\n@{items(\u0027For_each\u0027)?[\u0027cr1d7_instruktionen\u0027]}",
+              "runAfter": {
+                "Compose_rowID": [
+                  "Succeeded"
+                ]
+              }
+            },
+            "Do_until": {
+              "type": "Until",
+              "expression": "@equals(outputs(\u0027Get_a_row_by_ID\u0027)?[\u0027body/cr1d7_cr_status\u0027],519970001)",
+              "limit": {
+                "count": 2,
+                "timeout": "PT9M"
+              },
+              "actions": {
+                "Execute_Recherche_Agent": {
+                  "type": "OpenApiConnectionWebhook",
+                  "inputs": {
+                    "parameters": {
+                      "Copilot": "copilots_header_vwitabe_agent1SSdXmv",
+                      "body/message": "@outputs(\u0027Compose_Child_Agent_Prompt\u0027)"
+                    },
+                    "host": {
+                      "apiId": "/providers/Microsoft.PowerApps/apis/shared_microsoftcopilotstudio",
+                      "operationId": "ExecuteCopilotAsyncV2",
+                      "connectionName": "shared_microsoftcopilotstudio"
+                    }
+                  }
+                },
+                "Delay_10_sec": {
+                  "type": "Wait",
+                  "inputs": {
+                    "interval": {
+                      "count": 10,
+                      "unit": "Second"
+                    }
+                  },
+                  "runAfter": {
+                    "Execute_Recherche_Agent": [
+                      "SUCCEEDED"
+                    ]
+                  }
+                },
+                "Get_a_row_by_ID": {
+                  "type": "OpenApiConnection",
+                  "inputs": {
+                    "parameters": {
+                      "entityName": "cr1d7_rechercheergebnisses",
+                      "recordId": "@outputs(\u0027Compose_rowID\u0027)"
+                    },
+                    "host": {
+                      "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+                      "operationId": "GetItem",
+                      "connectionName": "shared_commondataserviceforapps"
+                    }
+                  },
+                  "runAfter": {
+                    "Delay_10_sec": [
+                      "SUCCEEDED"
+                    ]
+                  }
+                }
+              },
+              "runAfter": {
+                "Compose_Child_Agent_Prompt": [
+                  "Succeeded"
+                ]
+              }
+            }
+          },
+          "runAfter": {
+            "List_rows_Instructions": [
+              "SUCCEEDED"
+            ]
+          },
+          "runtimeConfiguration": {
+            "concurrency": {
+              "repetitions": 5
+            }
+          }
+        },
+        "Respond_to_the_agent": {
+          "type": "Response",
+          "kind": "Skills",
+          "inputs": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "result": {
+                  "title": "Result",
+                  "description": "",
+                  "type": "string",
+                  "x-ms-content-hint": "TEXT",
+                  "x-ms-dynamically-added": true
+                }
+              },
+              "additionalProperties": {}
+            },
+            "statusCode": 200,
+            "body": {
+              "result": "@{outputs(\u0027Compose_Result\u0027)}"
+            }
+          },
+          "runAfter": {
+            "Compose_Result": [
+              "SUCCEEDED"
+            ]
+          }
+        },
+        "Compose_Completed": {
+          "type": "Compose",
+          "inputs": "Completed",
+          "runAfter": {
+            "For_each": [
+              "SUCCEEDED",
+              "SKIPPED"
+            ]
+          }
+        },
+        "Compose_Result": {
+          "type": "Compose",
+          "inputs": "@coalesce(outputs(\u0027Compose_Completed\u0027),outputs(\u0027Compose_TimeOut\u0027))",
+          "runAfter": {
+            "Compose_Completed": [
+              "SUCCEEDED",
+              "SKIPPED"
+            ],
+            "Compose_TimeOut": [
+              "SUCCEEDED",
+              "SKIPPED"
+            ]
+          }
+        },
+        "Compose_TimeOut": {
+          "type": "Compose",
+          "inputs": "Timeout",
+          "runAfter": {
+            "For_each": [
+              "TIMEDOUT"
+            ]
+          }
+        }
+      },
+      "outputs": {},
+      "description": "Diese Flow f\u00FChrt parallel 5 Agenten aus, welche die Kriterien 1-5 recherchieren. \n\nAls Eingabe werden Instruktionen je Kriterium erwartet\n\nDie Ergebnisse werden je Kriterium zur\u00FCck gegeben"
+    }
+  },
+  "schemaVersion": "1.0.0.0"
+}
